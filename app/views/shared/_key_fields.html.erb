@@ -4,7 +4,7 @@
     <% if /:\/\//.match(key.url) %>
       <%= link_to "#{key.url}", key.url, id: "url_#{key.id}"%>
     <% else %>
-      <a align="left" class='keys-links' data-clipboard-target='url_<%=key.id%>' id='d_clip_url_<%=key.id%>'>
+      <a class='keys-links' data-clipboard-target='url_<%=key.id%>' id='d_clip_url_<%=key.id%>'>
         <%= label_tag key.url, key.url, id: "url_#{key.id}" %>
       </a>
     <% end %>
@@ -12,8 +12,17 @@
 </td>
 <td>
   <% unless key.login.blank? %>
-    <a align="left" class='keys-links' data-clipboard-target='login_<%=key.id%>' id='d_clip_login_<%=key.id%>'>
+    <a class='keys-links' data-clipboard-target='login_<%=key.id%>' id='d_clip_login_<%=key.id%>'>
       <label id="login_<%=key.id%>"><%= key.login %></label>
+    </a>
+  <% end %>
+</td>
+<td>
+  <% unless key.whitelist.blank? %>
+    <a class='keys-links'>
+      <label id="whitelist_<%=key.id%>">
+        <%= key.whitelist.split(",").collect { |u| "User: " + User.find(u).name rescue "Group: " + Group.find(u).name rescue nil}.join("<br />").html_safe %>
+      </label>
     </a>
   <% end %>
 </td>

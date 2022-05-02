@@ -1,3 +1,4 @@
+table.list td { text-align: left; vertical-align: top; }
 #keys_table a.keys-actions { color: #888; text-decoration: none; font-size: 120%; padding: 0; }
 
 #keys_table a.keys-actions:hover, a.keys-actions:active { color: #c61a1a; text-decoration: none; cursor: pointer; font-size: 120%; }

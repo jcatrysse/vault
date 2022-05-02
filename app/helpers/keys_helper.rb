@@ -21,7 +21,7 @@ module KeysHelper
     left_margin   = pdf.get_original_margins['left'] # 10
     right_margin  = pdf.get_original_margins['right'] # 10
     bottom_margin = pdf.get_footer_margin
-    row_height    = 4
+    row_height    = 6
 
     # column widths
     table_width = page_width - right_margin - left_margin
@@ -31,9 +31,10 @@ module KeysHelper
     pdf.RDMCell(190,10, title)
     pdf.ln
 
-    pdf.RDMMultiCell(100,row_height,t('key.attr.name'),1,"",0,0)
+    pdf.RDMMultiCell(50,row_height,t('key.attr.name'),1,"",0,0)
     pdf.RDMMultiCell(100,row_height,t('key.attr.url'),1,"",0,0)
     pdf.RDMMultiCell(30,row_height,t('key.attr.login'),1,"",0,0)
+    pdf.RDMMultiCell(50,row_height,t('key.attr.whitelist'),1,"",0,0)
     pdf.RDMMultiCell(50,row_height,t('key.attr.body'),1,"",0,1)
 
     pdf.SetFontStyle('',8)
@@ -44,11 +45,14 @@ module KeysHelper
       key.url = "-" if key.url == nil
       key.login = "-" if key.login == nil
       key.body = "-" if key.body == nil
+      whitelist_name = key.whitelist.split(",").collect { |u| "User: " + User.find(u).name rescue "Group: " + Group.find(u).name rescue nil}.join("\n")
+      row_height_multiplier = key.whitelist.split(",").count || 1
 
-      pdf.RDMMultiCell(100,row_height,key.name,1,"",0,0)
-      pdf.RDMMultiCell(100,row_height,key.url,1,"",0,0)
-      pdf.RDMMultiCell(30,row_height,key.login,1,"",0,0)
-      pdf.RDMMultiCell(50,row_height,key.body,1,"",0,1)
+      pdf.RDMMultiCell(50,row_height * row_height_multiplier,key.name,1,"",0,0)
+      pdf.RDMMultiCell(100,row_height * row_height_multiplier,key.url,1,"",0,0)
+      pdf.RDMMultiCell(30,row_height * row_height_multiplier,key.login,1,"",0,0)
+      pdf.RDMMultiCell(50,row_height * row_height_multiplier,whitelist_name,1,"",0,0)
+      pdf.RDMMultiCell(50,row_height * row_height_multiplier,key.body,1,"",0,1)
 
       max_height = 6*row_height
       space_left = page_height - base_y - bottom_margin
