@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 redmine_version_file = File.expand_path("../../../lib/redmine/version.rb",__FILE__)
 
-if (!File.exists? redmine_version_file)
+unless File.exist? redmine_version_file
   redmine_version_file = File.expand_path("lib/redmine/version.rb");
 end
 
