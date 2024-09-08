@@ -15,7 +15,7 @@ if Gem::Version.new(redmine_version_major) >= Gem::Version.new('4')
 end
 
 gem 'roo'
-gem 'iconv'
+#gem 'iconv'
 gem 'rubyzip', '~> 2.3.0'
 gem 'zip-zip'
 

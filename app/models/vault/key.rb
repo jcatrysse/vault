@@ -1,6 +1,6 @@
 module Vault
   require 'csv'
-  require 'iconv'
+	#require 'iconv'
 
   class Vault::Key < ActiveRecord::Base
     belongs_to :project
