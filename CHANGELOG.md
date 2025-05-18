@@ -2,6 +2,10 @@
 ### Improvements
 - [Redmine 6.0 compatibility.](https://github.com/noshutdown-ru/vault/issues/96)
 
+## Version: 0.5.2
+### Improvements
+- Add global tag color editing in Vault settings
+
 ## Version: 0.5.1
 ### Bugfix
 - Resolve compatibility issue with RedmineUP tags plugin

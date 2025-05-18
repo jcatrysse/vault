@@ -52,3 +52,30 @@
     </table>
   </div>
 </div>
+<div id="settings">
+  <div class="box tabular settings">
+    <table>
+      <thead>
+      <tr>
+        <th>Tag</th>
+        <th>Color</th>
+        <th></th>
+      </tr>
+      </thead>
+      <tbody>
+      <% @tags.sort_by(&:name).each do |tag| %>
+        <tr>
+          <td><%= tag.name %></td>
+          <td>
+            <%= form_with model: tag, url: vault_tag_path(tag), method: :patch, local: true do |f| %>
+              <!-- Kleurveld (gebruik type='color' voor kleurkiezer) -->
+              <%= f.text_field :color, value: tag.color, size: 7, type: 'color' %>
+              <%= f.submit 'Update', class: 'button-small' %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

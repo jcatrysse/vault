@@ -8,7 +8,7 @@ class VaultSettingsController < ApplicationController
   before_action :require_admin
 
   def index
-
+    @tags = Vault::Tag.all
   end
 
   def save

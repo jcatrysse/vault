@@ -25,6 +25,9 @@ end
 # Cross-project overview of all keys
 get 'keys/all', to: 'keys#all', as: :keys_all
 
+# Vault tag update route
+patch 'vault/tags/:id', to: 'vault_tags#update', as: 'vault_tag'
+
 # Vault settings (stand-alone resource)
 resources :vault_settings do
   collection do
