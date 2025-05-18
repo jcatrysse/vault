@@ -2,6 +2,10 @@
 ### Improvements
 - [Redmine 6.0 compatibility.](https://github.com/noshutdown-ru/vault/issues/96)
 
+## Version: 0.5.1
+### Bugfix
+- Resolve compatibility issue with RedmineUP tags plugin
+
 ## Version: 0.5.0
 ### Improvements
 - [Redmine 5.0 compatibility.](https://github.com/noshutdown-ru/vault/issues/91)
