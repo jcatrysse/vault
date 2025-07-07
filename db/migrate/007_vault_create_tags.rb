@@ -1,4 +1,4 @@
-class CreateTags < ActiveRecord::Migration[6.1]
+class VaultCreateTags < ActiveRecord::Migration[6.1]
   def change
     create_table :vault_tags do |t|
       t.string :name, index: true
