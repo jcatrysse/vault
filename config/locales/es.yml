@@ -24,6 +24,7 @@ es:
   export:
     title:
       pdf: "PDF"
+      csv: "CSV"
     pdf:
       title: "Claves"
 

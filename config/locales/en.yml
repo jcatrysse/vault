@@ -24,6 +24,7 @@ en:
   export:
     title:
       pdf: "PDF"
+      csv: "CSV"
     pdf:
       title: "Passwords"
 

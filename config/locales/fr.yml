@@ -24,6 +24,7 @@ fr:
   export:
     title:
       pdf: "PDF"
+      csv: "CSV"
     pdf:
       title: "Clefs"
 

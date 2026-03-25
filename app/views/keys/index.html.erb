@@ -50,6 +50,7 @@
 
 <% other_formats_links do |f| %>
     <%= f.link_to_with_query_parameters t('export.title.pdf') if User.current.allowed_to?(:view_keys, @project) if User.current.allowed_to?(:export_keys, @project)%>
+    <%= f.link_to_with_query_parameters t('export.title.csv'), format: 'csv' if User.current.allowed_to?(:view_keys, @project) if User.current.allowed_to?(:export_keys, @project) %>
 <% end %>
 
 <% content_for :sidebar do %>

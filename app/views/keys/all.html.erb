@@ -7,7 +7,7 @@
 <% end %>
 
 <div class="contextual">
-  <%= link_to t('key.btn.new'), new_project_key_path(@project), class: 'icon icon-add' if User.current.allowed_to?(:view_keys, @project) if User.current.allowed_to?(:edit_keys, @project) %>
+  <%= link_to t('key.btn.new'), new_project_key_path(@projects.first), class: 'icon icon-add' if @projects.present? && User.current.allowed_to?(:view_keys, @projects.first) && User.current.allowed_to?(:edit_keys, @projects.first) %>
 </div>
 
 <h2 class="keys-search-title">
@@ -20,7 +20,7 @@
   <%= button_to(t('button_clear'), {query: ''}, method: 'get') %>
 </h2>
 
-<%= form_tag({}, :data => {:cm_url => @project }) do %>
+<%= form_tag({}, data: { cm_url: '' }) do %>
   <table class='list' id='keys_table'>
     <thead>
     <tr>
@@ -49,7 +49,8 @@
 </span>
 
 <% other_formats_links do |f| %>
-  <%= f.link_to_with_query_parameters t('export.title.pdf') if User.current.allowed_to?(:view_keys, @project) if User.current.allowed_to?(:export_keys, @project)%>
+  <%= f.link_to_with_query_parameters t('export.title.pdf') if @can_export %>
+  <%= f.link_to_with_query_parameters t('export.title.csv'), format: 'csv' if @can_export %>
 <% end %>
 
 <% content_for :sidebar do %>

@@ -23,6 +23,7 @@ pt-BR:
   export:
     title:
       pdf: "PDF"
+      csv: "CSV"
     pdf:
       title: "Acessos"
 

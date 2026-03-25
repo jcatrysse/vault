@@ -1,3 +1,4 @@
+require "csv"
 class KeysController < ApplicationController
   before_action :find_project_by_project_id, except: [:all]
   before_action :authorize, except: [:all]
@@ -27,12 +28,12 @@ class KeysController < ApplicationController
       if @query.match(/#/)
         tag_string = (@query.match(/(#)([^,]+)/))[2]
         tag = Vault::Tag.find_by_name(tag_string)
-        @keys = tag.nil? ? nil : tag.keys.where(project: @project)
+        @keys = tag.nil? ? nil : tag.keys.includes(:tags, :project).where(project: @project)
       else
-        @keys = @project.keys.where("LOWER(#{Vault::Key.table_name}.name) LIKE ? OR LOWER(#{Vault::Key.table_name}.url) LIKE ?", "%#{@query}%", "%#{@query}%")
+        @keys = @project.keys.includes(:tags, :project).where("LOWER(#{Vault::Key.table_name}.name) LIKE ? OR LOWER(#{Vault::Key.table_name}.url) LIKE ?", "%#{@query}%", "%#{@query}%")
       end
     else
-      @keys = @project.keys
+      @keys = @project.keys.includes(:tags, :project)
     end
 
     @keys = @keys.order(sort_clause) unless @keys.nil?
@@ -49,10 +50,18 @@ class KeysController < ApplicationController
     end
 
     @keys.map(&:decrypt!)
+    can_export = User.current.allowed_to?(:export_keys, @project)
 
     respond_to do |format|
       format.html
-      format.pdf
+      format.pdf { can_export ? render : deny_access }
+      format.csv do
+        if can_export
+          send_data keys_to_csv(@keys), type: 'text/csv; charset=utf-8', filename: "#{@project.identifier}-keys.csv"
+        else
+          deny_access
+        end
+      end
       format.json { render json: @keys }
     end
   end
@@ -75,6 +84,7 @@ class KeysController < ApplicationController
     else
       @projects = projects_for_jump_box(User.current)
     end
+    @can_export = User.current.admin? || @projects.any? { |project| User.current.allowed_to?(:export_keys, project) }
 
     sort_init 'name', 'asc'
     sort_update 'name' => "#{Vault::Key.table_name}.name"
@@ -85,12 +95,12 @@ class KeysController < ApplicationController
       if @query.match(/#/)
         tag_string = (@query.match(/(#)([^,]+)/))[2]
         tag = Vault::Tag.find_by_name(tag_string)
-        @keys = tag.nil? ? nil : tag.keys.all
+        @keys = tag.nil? ? nil : tag.keys.includes(:tags, :project).all
       else
-        @keys = Vault::Key.where("LOWER(#{Vault::Key.table_name}.name) LIKE ? OR LOWER(#{Vault::Key.table_name}.url) LIKE ?", "%#{@query}%", "%#{@query}%")
+        @keys = Vault::Key.includes(:tags, :project).where("LOWER(#{Vault::Key.table_name}.name) LIKE ? OR LOWER(#{Vault::Key.table_name}.url) LIKE ?", "%#{@query}%", "%#{@query}%")
       end
     else
-      @keys = @keys = Vault::Key.all
+      @keys = Vault::Key.includes(:tags, :project).all
     end
 
     @keys = @keys.order(sort_clause) unless @keys.nil?
@@ -110,7 +120,14 @@ class KeysController < ApplicationController
 
     respond_to do |format|
       format.html
-      format.pdf
+      format.pdf { @can_export ? render : deny_access }
+      format.csv do
+        if @can_export
+          send_data keys_to_csv(@keys), type: 'text/csv; charset=utf-8', filename: 'all-keys.csv'
+        else
+          deny_access
+        end
+      end
       format.json { render json: @keys }
     end
   end
@@ -206,6 +223,22 @@ class KeysController < ApplicationController
   end
 
   private
+
+  def keys_to_csv(keys)
+    CSV.generate(headers: true) do |csv|
+      csv << key_export_columns
+
+      keys.each do |key|
+        csv << key_export_columns.map do |column|
+          column == 'tags' ? key.tags.map(&:name).join(', ') : key.read_attribute(column)
+        end
+      end
+    end
+  end
+
+  def key_export_columns
+    @key_export_columns ||= Vault::Key.column_names + ['tags']
+  end
 
   def find_key
     @key = Vault::Key.find(params[:id])

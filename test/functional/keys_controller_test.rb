@@ -10,8 +10,60 @@ class KeysControllerTest < Vault::ControllerTest
   def setup
     Role.find(1).add_permission! :view_keys
     Role.find(1).add_permission! :edit_keys
+    Role.find(1).add_permission! :keys_all
+    Role.find(1).add_permission! :export_keys
     Project.find(1).enabled_module_names = [:keys]
     Setting.plugin_vault['use_null_encryption'] = 'on'
+  end
+
+  def test_all_renders_key_file_actions_outside_project_scope
+    @request.session[:user_id] = 2
+
+    get :all
+
+    assert_response :success
+    assert_includes response.body, '/projects/ecookbook/key_files/3/download'
+  end
+
+  def test_all_csv_export
+    @request.session[:user_id] = 2
+
+    get :all, format: :csv
+
+    assert_response :success
+    assert_equal 'text/csv', @response.media_type
+    assert_includes response.body, 'project_id'
+    assert_includes response.body, 'tags'
+    assert_includes response.body, 'server1'
+    assert_includes response.body, 'ssh'
+  end
+
+  def test_all_pdf_export
+    @request.session[:user_id] = 2
+
+    get :all, format: :pdf
+
+    assert_response :success
+    assert_equal 'application/pdf', @response.media_type
+  end
+
+  def test_all_csv_forbidden_without_global_permission
+    Role.find(1).remove_permission! :keys_all
+    @request.session[:user_id] = 2
+
+    get :all, format: :csv
+
+    assert_response :success
+    assert_includes response.body, I18n.t('error.user.not_allowed')
+  end
+
+  def test_all_csv_forbidden_without_export_permission
+    Role.find(1).remove_permission! :export_keys
+    @request.session[:user_id] = 2
+
+    get :all, format: :csv
+
+    assert_response 403
   end
 
   def test_index

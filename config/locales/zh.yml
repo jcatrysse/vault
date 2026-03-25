@@ -24,6 +24,7 @@ zh:
   export:
     title:
       pdf: "PDF"
+      csv: "CSV"
 
     pdf:
       title: "密钥"
